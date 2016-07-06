@@ -1,0 +1,126 @@
+---
+title: "zanedbání povinné výživy"
+author: "Václav Haisman"
+date: "červenec 2016"
+output:
+  html_document: default
+  pdf_document:
+    keep_tex: yes
+    latex_engine: xelatex
+  word_document: default
+lang: cs-CZ
+---
+
+```{r, echo=FALSE, message=FALSE}
+library(knitr)
+#library(sqldf)
+library(tcltk)
+library(gsubfn)
+library(proto)
+#library(RSQLite)
+#library(DBI)
+library(ggplot2)
+#library(ppls)
+#library(TTR)
+#library(forecast)
+library(clusterSim)
+#library(reshape2)
+#library(Jmisc)
+library(pander)
+#library(xtable)
+#options(xtable.floating=FALSE)
+options("scipen"=100, "digits"=10)
+```
+
+# Zanedbání povinné výživy
+
+## Data
+
+```{r, echo=FALSE, message=FALSE}
+readCsv <- function(fileName) {
+  DF <- read.csv2(fileName, fileEncoding = "UTF-8",
+                  sep = ",", quote = "\"", header = TRUE, dec = ",", na.strings = c("neznámo"))
+  return(DF)
+}
+
+printTable <- function(dataFrame) {
+  kable(dataFrame, digits = 2,
+        format.args = list(big.mark = ' ', decimal.mark = ","),
+        row.names = FALSE)
+}
+
+printTable2 <- function(dataFrame) {
+    pander(dataFrame, digits = 2, decimal.mark = ",", big.mark = ' ',
+           keep.trailing.zeroes = TRUE,
+           table.split.cells = 17)
+#  kable(dataFrame, digits = 2,
+#        format.args = list(big.mark = ' '),
+#        col.names = colNames,
+#        row.names = FALSE)
+}
+
+fmtNum <- function(x) {
+    format(x, digits=2, decimal.mark = ",")
+}
+
+fmtNumM <- function(x) {
+    format(x, digits=2, decimal.mark = "{,}")
+}
+
+fmtNum2 <- function(x, digits) {
+    format(x, digits=digits, decimal.mark = ",")
+}
+
+```
+
+```{r, echo=FALSE}
+tblColNames <- c("rok", "zjištěno", "stíháno osob", "z toho ženy", "paragraf", "nezaměstnanost v % (ČSÚ)", "HDP (výrobní metodou) v mil. Kč", "nezaměstnanost v % (MPSV)", "počet evidovaných uchazečů (průměr, MPSV)", "nově hlášených 1.-12. (MPSV)")
+
+DF <- readCsv("zanedbání-povinné-výživy-statistika.csv")
+
+printTable2(setNames(DF, tblColNames))
+```
+
+## Normalizovaná data
+
+```{r, echo=FALSE, fig.cap="Normalizovaná data"}
+pdf.options(encoding = 'CP1250')
+
+nDF <- data.frame(
+    rok=DF$rok,
+    zjistenych=data.Normalization(DF$zjistenych, type="n4"),
+    pocEvid=data.Normalization(DF$pocEvid, type="n4"))
+
+printTable2(nDF)
+```
+
+```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV) v letech 2008 až 2015."}
+pdf.options(encoding = 'CP1250')
+
+a <- data.frame(rok = nDF$rok, id = factor(rep("průměrný počet evidovaných\nnezaměstnaných za rok", each = length(nDF$rok))), value = nDF$pocEvid)
+b <- data.frame(rok = nDF$rok, id = factor(rep("zjištěných trestných činů\nzanedbání povinné výživy", each = length(nDF$rok))), value = nDF$zjistenych)
+nDF2 <- do.call(rbind, list(a,b))
+
+ggplot(nDF2, aes(x=factor(rok), y = value, group=id, color=id)) +
+    geom_point() +
+    geom_line() +
+    labs(color = "řady", x = "rok", y = "[-]") +
+    theme(legend.position="top")
+
+```
+
+```{r, echo=FALSE, fig.keep="high", fig.cap="Korelace"}
+pdf.options(encoding = 'CP1250')
+
+ggplot(DF,aes(pocEvid, zjistenych)) +
+    geom_point() +
+    labs(x = "průměrný počet evidovaných nezaměstnaných za rok",
+         y = "zjištěných trestných činů zanedbání povinné výživy")
+```
+
+```{r, echo=FALSE}
+CorrTest <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.95, method = "pearson")
+Corr <- CorrTest$estimate
+```
+Korelace mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech 2008 až 2015 je $r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`$, ${CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)$, $p=`r fmtNumM(CorrTest$p.value)`$.
+
