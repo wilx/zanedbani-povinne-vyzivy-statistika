@@ -3,12 +3,12 @@ title: "zanedbání povinné výživy"
 author: "Václav Haisman"
 date: "červenec 2016"
 output:
-  html_document: default
   pdf_document:
     fig_caption: yes
     keep_tex: yes
     latex_engine: xelatex
     toc: yes
+  html_document: default
   word_document: default
 mainfont: Charis SIL
 lang: cs-CZ
@@ -66,18 +66,20 @@ readCsv <- function(fileName) {
 
 printTable <- function(dataFrame) {
   kable(dataFrame, digits = 2,
-        format.args = list(big.mark = ' ', decimal.mark = ","),
+        format.args = list(big.mark = ' ', decimal.mark = ","),
         row.names = FALSE)
 }
 
 printTable2 <- function(dataFrame) {
-    pander(dataFrame, digits = 2, decimal.mark = ",", big.mark = ' ',
+    pander(dataFrame, digits = 2, decimal.mark = ",", big.mark = ' ',
            keep.trailing.zeroes = TRUE,
-           table.split.cells = 17)
-#  kable(dataFrame, digits = 2,
-#        format.args = list(big.mark = ' '),
-#        col.names = colNames,
-#        row.names = FALSE)
+           table.split.cells = 15)
+}
+
+printTableSmall <- function(dataFrame) {
+    pander(dataFrame, digits = 2, decimal.mark = ",", big.mark = ' ',
+           keep.trailing.zeroes = TRUE, 
+           graph.fontsize=10)
 }
 
 fmtNum <- function(x) {
@@ -167,3 +169,71 @@ Korelace mezi zjištěnými trestnými činy zanedbání povinné výživy a po�
     - rozcestník měsíčních přehledů: <http://www.upsvar.sk/statistiky/nezamestnanost-mesacne-statistiky.html?page_id=1254>
 
 ## Data
+
+```{r, echo=FALSE, fig.cap="Počty uchazečů o zaměstnání na konci kalendářních měsíců v jednotlivých letech."}
+pdf.options(encoding = 'CP1250')
+
+srDFuoz <- readCsv("sr-uoz-v-mesicich.csv")
+
+printTableSmall(setNames(srDFuoz, seq(2015,2005)))
+```
+
+```{r, echo=FALSE, fig.cap="Počty zjištěných trestných činů zanedbání povinné výživy"}
+pdf.options(encoding = 'CP1250')
+
+srDFzpv <- readCsv("sr-zanedbání-povinné-výživy-statistika.csv")
+
+printTable2(setNames(srDFzpv, c("rok", "zjištěno")))
+```
+
+## Normalizovaná data
+
+```{r, echo=FALSE, fig.cap="Normalizovaná data"}
+pdf.options(encoding = 'CP1250')
+
+srnDF <- data.frame(
+    rok=srDFzpv$rok,
+    zjistenych=data.Normalization(srDFzpv$zjistenych, type="n4"),
+    pocEvid=data.Normalization(colMeans(srDFuoz), type="n4"))
+
+printTable2(srnDF)
+```
+
+
+```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a průměrných počtu uchazečů o zaměstnání."}
+
+a <- data.frame(rok = srnDF$rok,
+                id = factor(rep("průměrný počet evidovaných\nuchazečů o zaměstnání za rok", each = length(srnDF$rok))),
+                value = srnDF$pocEvid)
+b <- data.frame(rok = srnDF$rok,
+                id = factor(rep("zjištěných trestných činů\nzanedbání povinné výživy", each = length(srnDF$rok))),
+                value = srnDF$zjistenych)
+srnDF2 <- do.call(rbind, list(a,b))
+
+ggplot(srnDF2, aes(x=factor(rok), y = value, group=id, color=id)) +
+    geom_point() +
+    geom_line() +
+    labs(color = "řady", x = "rok", y = "[-]") +
+    theme(legend.position="top")
+```
+
+``` {r, echo=FALSE, fig.keep="high", fig.cap="Korelace"}
+srDF <- data.frame(
+    rok=srDFzpv$rok,
+    zjistenych=srDFzpv$zjistenych,
+    pocEvid=colMeans(srDFuoz))
+
+ggplot(srDF,aes(pocEvid, zjistenych)) +
+    geom_point() +
+    scale_x_continuous(breaks = seq(round(min(srDF$pocEvid), -5), round(max(srDF$pocEvid), -5), by = 50000)) +
+    labs(x = "průměrný počet uchazečů o zaměstnání za rok",
+         y = "zjištěných trestných činů zanedbání povinné výživy")
+```
+
+```{r, echo=FALSE}
+srCorrTest <- cor.test(srDF$zjistenych, srDF$pocEvid, conf.level = 0.99, method = "pearson")
+srCorr <- srCorrTest$estimate
+```
+
+Korelace mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných uchazečů o zaměstnání za rok v letech `r min(srDF$rok)` až `r max(srDF$rok)` na Slovensku je $r(`r fmtNumM(srCorrTest$parameter)`)=`r fmtNumM(srCorr)`$, ${CI}_{`r attr(srCorrTest$conf.int, "conf.level")`}=(`r fmtNumM(srCorrTest$conf.int[1])`; `r fmtNumM(srCorrTest$conf.int[2])`)$, $p=`r fmtNumM(srCorrTest$p.value)`$.
+
