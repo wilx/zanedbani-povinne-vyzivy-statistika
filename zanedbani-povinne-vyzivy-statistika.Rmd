@@ -2,16 +2,17 @@
 title: "zanedbání povinné výživy"
 author: "Václav Haisman"
 date: "červenec 2016"
-geometry:
-    - a4paper
-mainfont: Charis SIL
 output:
+  html_document: default
   pdf_document:
+    fig_caption: yes
     keep_tex: yes
     latex_engine: xelatex
-  html_document: default
+    toc: yes
   word_document: default
+mainfont: Charis SIL
 lang: cs-CZ
+geometry: a4paper
 ---
 
 ```{r, echo=FALSE, message=FALSE}
@@ -35,7 +36,7 @@ library(pander)
 options("scipen"=100, "digits"=10)
 ```
 
-# Zanedbání povinné výživy
+# Zanedbání povinné výživy v České Republice
 
 ## Zdroje dat
 
@@ -145,3 +146,24 @@ Corr <- CorrTest$estimate
 ```
 Korelace mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je $r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`$, ${CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)$, $p=`r fmtNumM(CorrTest$p.value)`$.
 
+# Zanedbní povinné výživy ve Slovenské Republice
+
+## Zdroje dat
+
+- statistiky trestných činů zanedbání povinné výživy:
+    - do roku 2008: <http://www.minv.sk/?statistika-kriminality-v-slovenskej-republike-kopia-3>
+    - rok 2009: <http://www.minv.sk/?statistika-kriminality-v-slovenskej-republike-za-rok-2009>
+    - rok 2010: <http://www.minv.sk/?statistika-kriminality-v-slovenskej-republike-za-rok-2010>
+    - rok 2011: <http://www.minv.sk/?statistika-kriminality-v-slovenskej-republike-za-rok-2011>
+    - rok 2012: <http://www.minv.sk/?statistika-kriminality-v-slovenskej-republike-za-rok-2012>
+    - rok 2013: <http://www.minv.sk/?statistika_kriminality_v_slovenskej_republike_za_rok_2013>
+    - rok 2014: <http://www.minv.sk/?kriminalita_2014_xml>
+    - rok 2015: <http://www.minv.sk/?statistika-kriminality-v-slovenskej-republike-za-rok-2015>
+    
+- počty registrovaných uchazečů o zaměstnání:
+    
+    Počty registrovaných uchazečů o zaměstnání jsem spočítal jako průměr přes měsíční počty uchazečů o zaměstnání v každém roce. [Ústredie práce, sociálnych vecí a rodiny](http://www.upsvar.sk/) SR nenabízí přehled s předpočítaným ročním průměrem, ale pouze měsíční nebo čtvrtletní údaje.
+    
+    - rozcestník měsíčních přehledů: <http://www.upsvar.sk/statistiky/nezamestnanost-mesacne-statistiky.html?page_id=1254>
+
+## Data
