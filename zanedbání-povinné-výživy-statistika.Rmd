@@ -2,11 +2,14 @@
 title: "zanedbání povinné výživy"
 author: "Václav Haisman"
 date: "červenec 2016"
+geometry:
+    - a4paper
+mainfont: Charis SIL
 output:
-  html_document: default
   pdf_document:
     keep_tex: yes
     latex_engine: xelatex
+  html_document: default
   word_document: default
 lang: cs-CZ
 ---
@@ -33,6 +36,23 @@ options("scipen"=100, "digits"=10)
 ```
 
 # Zanedbání povinné výživy
+
+## Zdroje dat
+
+- nezaměstnanost podle ČSÚ: <https://vdb.czso.cz/vdbvo2/faces/index.jsf?page=vystup-objekt&pvo=ZAM06&z=T&f=TABULKA&katalog=30853&str=v95&c=v3~8__RP2015>
+
+- statistiky trestných činů zanedbání povinné výživy:
+    - do roku 2007: <http://www.policie.cz/clanek/archiv-statistiky-statisticke-prehledy-kriminality.aspx>
+    - rok 2008: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2008.aspx>
+    - rok 2009: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2009.aspx>
+    - rok 2010: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2010.aspx>
+    - rok 2011: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2011.aspx>
+    - rok 2012: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2012.aspx>
+    - rok 2013: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2013.aspx>
+    - rok 2014: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2014.aspx>
+    - rok 2015: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2015.aspx>
+
+- statistiky nezaměstnanosti podle MPSV: <https://portal.mpsv.cz/sz/stat/stro>
 
 ## Data
 
@@ -94,7 +114,7 @@ nDF <- data.frame(
 printTable2(nDF)
 ```
 
-```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV) v letech 2008 až 2015."}
+```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV)."}
 pdf.options(encoding = 'CP1250')
 
 a <- data.frame(rok = nDF$rok, id = factor(rep("průměrný počet evidovaných\nnezaměstnaných za rok", each = length(nDF$rok))), value = nDF$pocEvid)
@@ -114,13 +134,14 @@ pdf.options(encoding = 'CP1250')
 
 ggplot(DF,aes(pocEvid, zjistenych)) +
     geom_point() +
+    scale_x_continuous(breaks = seq(round(min(DF$pocEvid), -5), round(max(DF$pocEvid), -5), by = 50000)) +
     labs(x = "průměrný počet evidovaných nezaměstnaných za rok",
          y = "zjištěných trestných činů zanedbání povinné výživy")
 ```
 
 ```{r, echo=FALSE}
-CorrTest <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.95, method = "pearson")
+CorrTest <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "pearson")
 Corr <- CorrTest$estimate
 ```
-Korelace mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech 2008 až 2015 je $r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`$, ${CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)$, $p=`r fmtNumM(CorrTest$p.value)`$.
+Korelace mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je $r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`$, ${CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)$, $p=`r fmtNumM(CorrTest$p.value)`$.
 
