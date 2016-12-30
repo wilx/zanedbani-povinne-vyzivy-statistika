@@ -6,8 +6,10 @@ output:
   pdf_document:
     fig_caption: yes
     keep_tex: yes
-    latex_engine: xelatex
+    latex_engine: lualatex
     toc: yes
+    includes:
+      in_header: header.tex
   html_document: default
   word_document: default
 mainfont: Charis SIL
@@ -190,6 +192,9 @@ printTable2(setNames(srDFzpv, c("rok", "zjištěno")))
 
 ```{r, echo=FALSE, fig.cap="Normalizovaná data"}
 pdf.options(encoding = 'CP1250')
+
+colMax <- function(data) sapply(data, max, na.rm = TRUE)
+colMed <- function(data) sapply(data, median, na.rm = TRUE)
 
 srnDF <- data.frame(
     rok=srDFzpv$rok,

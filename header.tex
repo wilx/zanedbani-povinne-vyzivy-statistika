@@ -1,0 +1,53 @@
+\usepackage{amssymb}
+\usepackage{newunicodechar}
+\usepackage{accsupp}
+\usepackage{MnSymbol}
+\usepackage{textcomp}
+\usepackage{etoolbox}
+\usepackage{unicode-math}
+\usepackage{cstypo}
+
+\cstypoSingleLetterEnable
+\cstypoALetterEnable
+
+\AtBeginEnvironment{quote}{\slshape}
+
+% This sets default image width.
+\setkeys{Gin}{width=.85\textwidth}
+
+%\setmainfont{Charis SIL}
+\setmathfont[Scale=MatchLowercase]{TeX Gyre Schola Math}
+\setmathfont[range={`A-`Z,`a-`z,`0-`9}]{Charis SIL}
+%\setmainfont{TeX Gyre Pagella}
+%\setmainfont{DejaVu Serif}
+%\setsansfont{DejaVu Sans}
+%\setmonofont{DejaVu Sans Mono}
+%\newfontfamily\myurlfont[Ligatures={TeX}]{Liberation Sans Narrow}
+\newfontfamily\myurlfont[Ligatures={TeX}]{DejaVu Serif Condensed}
+\renewcommand\UrlFont{\myurlfont}
+
+% This makes sure that linked text's links shows as a footnote.
+\makeatletter
+\let\oldhref=\href
+\renewcommand\href[2]{\oldhref{#1}{#2}\footnote{\url{#1}}}
+%\DeclareRobustCommand{\hreffootnote}{\hyper@normalise\hreffootnote@}
+\makeatother
+
+\newcommand{\noncopy}[1]{%
+    \BeginAccSupp{method=escape,ActualText={}}%
+    #1%
+    \EndAccSupp{}%
+}
+
+
+
+% cleveref seems to break polyglossia for me
+%\usepackage{cleveref}
+
+% This allows line breaks in URL in more places.
+\def\UrlBreaks{\do\/\do-\do.\do=\do_\do?\do\&\do\%\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9}
+
+%\usepackage{lineno}
+%\linenumbers
+
+\usepackage[all]{nowidow}
