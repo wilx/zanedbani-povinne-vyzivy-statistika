@@ -119,7 +119,7 @@ nDF <- data.frame(
 printTable2(nDF)
 ```
 
-```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV)."}
+```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)."}
 pdf.options(encoding = 'CP1250')
 
 a <- data.frame(rok = nDF$rok, id = factor(rep("průměrný počet evidovaných\nnezaměstnaných za rok", each = length(nDF$rok))), value = nDF$pocEvid)
@@ -134,11 +134,13 @@ ggplot(nDF2, aes(x=factor(rok), y = value, group=id, color=id)) +
 
 ```
 
-```{r, echo=FALSE, fig.keep="high", fig.cap="Korelace"}
+```{r, echo=FALSE, fig.keep="high", fig.cap="Korelacezjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)"}
 pdf.options(encoding = 'CP1250')
 
 ggplot(DF,aes(pocEvid, zjistenych)) +
     geom_point() +
+    stat_smooth(formula = y ~ x, method="gam", level=0.99) +
+    geom_text(aes(label=rok), hjust=0.25, vjust=-0.25, angle=45, check_overlap = FALSE) +
     scale_x_continuous(breaks = seq(round(min(DF$pocEvid), -5), round(max(DF$pocEvid), -5), by = 50000)) +
     labs(x = "průměrný počet evidovaných nezaměstnaných za rok",
          y = "zjištěných trestných činů zanedbání povinné výživy")
@@ -147,8 +149,11 @@ ggplot(DF,aes(pocEvid, zjistenych)) +
 ```{r, echo=FALSE}
 CorrTest <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "pearson")
 Corr <- CorrTest$estimate
+
+CorrTestS <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "spearman")
+CorrS <- CorrTestS$estimate
 ```
-Korelace mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je $r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`$, ${CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)$, $p=`r fmtNumM(CorrTest$p.value)`$.
+Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je $r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`, {CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`), p=`r fmtNumM(CorrTest$p.value)`, r^2=`r fmtNumM(Corr*Corr)`$. Spearmanův korelační koeficient mezi stejnými proměnnými je $r=`r fmtNumM(CorrS)`$, $p=`r fmtNumM(CorrTestS$p.value)`$.
 
 # Zanedbní povinné výživy ve Slovenské Republice
 
@@ -238,7 +243,10 @@ ggplot(srDF,aes(pocEvid, zjistenych)) +
 ```{r, echo=FALSE}
 srCorrTest <- cor.test(srDF$zjistenych, srDF$pocEvid, conf.level = 0.99, method = "pearson")
 srCorr <- srCorrTest$estimate
+
+CorrTestS <- cor.test(srDF$zjistenych, srDF$pocEvid, conf.level = 0.99, method = "spearman")
+CorrS <- CorrTestS$estimate
 ```
 
-Korelace mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných uchazečů o zaměstnání za rok v letech `r min(srDF$rok)` až `r max(srDF$rok)` na Slovensku je $r(`r fmtNumM(srCorrTest$parameter)`)=`r fmtNumM(srCorr)`$, ${CI}_{`r attr(srCorrTest$conf.int, "conf.level")`}=(`r fmtNumM(srCorrTest$conf.int[1])`; `r fmtNumM(srCorrTest$conf.int[2])`)$, $p=`r fmtNumM(srCorrTest$p.value)`$.
+Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných uchazečů o zaměstnání za rok v letech `r min(srDF$rok)` až `r max(srDF$rok)` na Slovensku je $r(`r fmtNumM(srCorrTest$parameter)`)=`r fmtNumM(srCorr)`$, ${CI}_{`r attr(srCorrTest$conf.int, "conf.level")`}=(`r fmtNumM(srCorrTest$conf.int[1])`; `r fmtNumM(srCorrTest$conf.int[2])`)$, $p=`r fmtNumM(srCorrTest$p.value)`$, $r^2=`r fmtNumM(srCorr*srCorr)`$. Spearmanův korelační koeficient mezi stejnými proměnnými je $r=`r fmtNumM(CorrS)`$, $p=`r fmtNumM(CorrTestS$p.value)`$.
 
