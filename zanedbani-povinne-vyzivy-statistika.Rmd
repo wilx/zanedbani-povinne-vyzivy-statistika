@@ -81,9 +81,17 @@ uchazečů o práci (MPSV) a součtu nové hlášených uchazečů o práci (MPS
 nejlépe korelujíc se ukázala být hodnota ročního průměru počtu evidovaných
 uchazečů o práci (MPSV).
 
+Dne 1. ledna 2010 nabyl účinnosti nový trestní zákoník a byl vyhlášen ve
+Sbírce zákonů pod číslem 40/2009 Sb. S ním přišla i změna paragrafu zločinu
+zanedbání povinné výživy z § 213 na § 196. Do § 196, oproti znění § 213,
+přibil konkrétní časový limit čtyř měsíců, po kterých se neplacení výživného
+stává trestným činem. Přibyl také § 196a, který umožňuje zakázat povinnému
+řízení motorového vozidla.
+
 ## Zdroje dat
 
 - statistiky trestných činů zanedbání povinné výživy:
+    - do roku 1999: @Maresova2000 [tabulka 2, *Vývoj počtu osob odsouzených podle § 213 tr.zák. v letech 1989 – 1999*]
     - do roku 2007: <http://www.policie.cz/clanek/archiv-statistiky-statisticke-prehledy-kriminality.aspx>
     - rok 2008: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2008.aspx>
     - rok 2009: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2009.aspx>
@@ -171,7 +179,7 @@ ggplot(nDF2, aes(x=factor(rok), y = value, group=id, color=id)) +
     geom_point() +
     geom_line() +
     labs(color = "řady", x = "rok", y = "[-]") +
-    theme(legend.position="top")
+    theme(legend.position="top", axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
@@ -195,7 +203,7 @@ Corr <- CorrTest$estimate
 CorrTestS <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "spearman")
 CorrS <- CorrTestS$estimate
 ```
-Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je \(r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`, {CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`), p=`r fmtNumM(CorrTest$p.value)`, r^2=`r fmtNumM(Corr*Corr)`\).
+Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je \(r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`\), \({CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)\), \(p=`r fmtNumM(CorrTest$p.value)`\), \(r^2=`r fmtNumM(Corr*Corr)`\).
 
 ## Závěr
 
