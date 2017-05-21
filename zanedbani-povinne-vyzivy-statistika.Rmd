@@ -1,7 +1,7 @@
 ---
-title: "zanedbání povinné výživy"
+title: "Zanedbání povinné výživy"
 author: "Václav Haisman"
-date: "červenec 2016"
+date: "květen 2017"
 output:
   pdf_document:
     fig_caption: yes
@@ -15,6 +15,8 @@ output:
 mainfont: Charis SIL
 lang: cs-CZ
 geometry: a4paper
+bibliography: citace.yaml
+csl: iso690-author-date-cs.csl
 ---
 
 ```{r, echo=FALSE, message=FALSE}
@@ -25,7 +27,8 @@ library(gsubfn)
 library(proto)
 #library(RSQLite)
 #library(DBI)
-library(ggplot2)
+library(tidyverse)
+#library(ggplot2)
 #library(ppls)
 #library(TTR)
 #library(forecast)
@@ -40,9 +43,41 @@ options("scipen"=100, "digits"=10)
 
 # Zanedbání povinné výživy v České Republice
 
-## Zdroje dat
+Zanedbání povinné výživy je téma několika stran v České Republice. TOP 09
+dává ústy Markéty Pekarové Adamové najevo, že chce přitáhnout šrouby
+zkrácením doby neplacení výživného, po které se stane neplacní trestným
+činnem [@Kopecky2016]. ČSSD to bere z jiné strany a skrze ministryni práce a
+sociálních věci Michaelu Marksovou prosazuje vyplácení výživného zálohově a
+chce případně nezaplacené výživné na povinných vymáhat zpětně
+[@Kopecky2016b].
 
-- nezaměstnanost podle ČSÚ: <https://vdb.czso.cz/vdbvo2/faces/index.jsf?page=vystup-objekt&pvo=ZAM06&z=T&f=TABULKA&katalog=30853&str=v95&c=v3~8__RP2015>
+Z dílny ministra spravedlnosti za ANO 2011 Roberta Pelikána vzešla *Analýza
+aktuálních otázek výživného* [-@msp2017]. Tato zpráva jistě stojí za
+přečtení, neboť osvětluje problematiku a praxi okolo výživného nejen v Česku,
+ale dává k porovnání i příklady z praxe v okolních Evropských zemích. Jedno z
+doporučení této zprávy je, že soudy by měly přistupovat k trestu odnětí
+svobody kvůli neplacení výživného jen po vyčerpání ostatních postihů
+povinného.
+
+Jako rozvedeného a povinného mě to toto téma také zajímá, i když doufám, že
+se do situace, kdy se mě tyto věci budou přímo dotýkat, nikdy nedostanu.
+
+Ihned, kdy se o tomto tématu začalo v roce 2016 diskutovat mě napadlo,
+obzvláště v souvsilosti se zkracováním lhůty, po které se z neplacení stane
+trestný čin, jaký vliv má na počty neplatičů výživného
+nezaměstnanost. Nezdálo se mi, že by zkrácení této lhůty významě přispělo ke
+snížení výskytu neplacení výživného.
+
+Rozhodl jsem se porovnat údaje ze statistik Policie ČR o trestných činech a
+údaje týkající se hospodářského výkonu a nezaměstnanosti Česka. Zkoušel jsem
+porovna zjištěné tresné činy zanedbání povinné výživy s HDP podle Českého
+Statistikého Úřadu (ČSÚ), nezaměstnaností podle ČSÚ, nezaměstnaností podle
+Ministerstva práce a sociálních věcí (MPSV), průměrem počtu evidovaných
+uchazečů o práci (MPSV) a součtu nové hlášených uchazečů o práci (MPSV). Jako
+nejlépe korelující se ukázala být hodnota ročního průměru počtu evidovaných
+uchazečů o práci (MPSV) v daném roce.
+
+## Zdroje dat
 
 - statistiky trestných činů zanedbání povinné výživy:
     - do roku 2007: <http://www.policie.cz/clanek/archiv-statistiky-statisticke-prehledy-kriminality.aspx>
@@ -54,15 +89,17 @@ options("scipen"=100, "digits"=10)
     - rok 2013: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2013.aspx>
     - rok 2014: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2014.aspx>
     - rok 2015: <http://www.policie.cz/clanek/statisticke-prehledy-kriminality-za-rok-2015.aspx>
+    - rok 2016: <http://www.mapakriminality.cz/#tabulky>
 
 - statistiky nezaměstnanosti podle MPSV: <https://portal.mpsv.cz/sz/stat/stro>
+
 
 ## Data
 
 ```{r, echo=FALSE, message=FALSE}
 readCsv <- function(fileName) {
   DF <- read.csv2(fileName, fileEncoding = "UTF-8",
-                  sep = ",", quote = "\"", header = TRUE, dec = ",", na.strings = c("neznámo"))
+                  sep = ",", quote = "\"", header = TRUE, dec = ",", na.strings = c("", "neznámo"))
   return(DF)
 }
 
@@ -80,7 +117,7 @@ printTable2 <- function(dataFrame) {
 
 printTableSmall <- function(dataFrame) {
     pander(dataFrame, digits = 2, decimal.mark = ",", big.mark = ' ',
-           keep.trailing.zeroes = TRUE, 
+           keep.trailing.zeroes = TRUE,
            graph.fontsize=10)
 }
 
@@ -99,7 +136,7 @@ fmtNum2 <- function(x, digits) {
 ```
 
 ```{r, echo=FALSE}
-tblColNames <- c("rok", "zjištěno", "stíháno osob", "z toho ženy", "paragraf", "nezaměstnanost v % (ČSÚ)", "HDP (výrobní metodou) v mil. Kč", "nezaměstnanost v % (MPSV)", "počet evidovaných uchazečů (průměr, MPSV)", "nově hlášených 1.-12. (MPSV)")
+tblColNames <- c("rok", "zjištěno", "stíháno osob", "z toho ženy", "paragraf", "nezaměstnanost v % (MPSV)", "počet evidovaných uchazečů (průměr, MPSV)", "nově hlášených 1.-12. (MPSV)")
 
 DF <- readCsv("zanedbání-povinné-výživy-statistika.csv")
 
@@ -134,16 +171,17 @@ ggplot(nDF2, aes(x=factor(rok), y = value, group=id, color=id)) +
 
 ```
 
-```{r, echo=FALSE, fig.keep="high", fig.cap="Korelacezjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)"}
+```{r, echo=FALSE, fig.keep="high", fig.cap="Korelace zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)"}
 pdf.options(encoding = 'CP1250')
 
 ggplot(DF,aes(pocEvid, zjistenych)) +
+    stat_smooth(formula = y ~ x, method="glm", level=0.99) +
     geom_point() +
-    stat_smooth(formula = y ~ x, method="gam", level=0.99) +
-    geom_text(aes(label=rok), hjust=0.25, vjust=-0.25, angle=45, check_overlap = FALSE) +
+    geom_text(aes(label=rok), hjust=0.5, vjust=-0.35, angle=0, check_overlap = TRUE) +
     scale_x_continuous(breaks = seq(round(min(DF$pocEvid), -5), round(max(DF$pocEvid), -5), by = 50000)) +
     labs(x = "průměrný počet evidovaných nezaměstnaných za rok",
-         y = "zjištěných trestných činů zanedbání povinné výživy")
+         y = "zjištěných trestných činů zanedbání povinné výživy") +
+    theme(legend.position="top")
 ```
 
 ```{r, echo=FALSE}
@@ -153,8 +191,11 @@ Corr <- CorrTest$estimate
 CorrTestS <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "spearman")
 CorrS <- CorrTestS$estimate
 ```
+Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je \(r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`, {CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`), p=`r fmtNumM(CorrTest$p.value)`, r^2=`r fmtNumM(Corr*Corr)`\).
+
+## Závěr
+
+Korelace nutně neznamená příčinu-důsledek, ale korlační koeficient `fmtNumM(Corr)` mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných je poměrně vysoký. Tento vztah jistě stojí za hlubší zkoumání. Pravděpodobnost, že nezaměstnanost způsobuje alespoň část výskytů neplacení výživného se mi zdá velmi vysoká.
 
 
-
-
-
+# Reference
