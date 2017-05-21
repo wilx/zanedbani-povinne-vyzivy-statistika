@@ -5,18 +5,22 @@ date: "květen 2017"
 output:
   pdf_document:
     fig_caption: yes
+    includes:
+      in_header: header.tex
     keep_tex: yes
     latex_engine: lualatex
     toc: yes
-    includes:
-      in_header: header.tex
+  html_notebook:
+    toc: yes
+  md_document:
+    variant: markdown_phpextra
   html_document: default
   word_document: default
-mainfont: Charis SIL
-lang: cs-CZ
 geometry: a4paper
-bibliography: citace.yaml
+lang: cs-CZ
+mainfont: Charis SIL
 csl: iso690-author-date-cs.csl
+bibliography: citace.yaml
 ---
 
 ```{r, echo=FALSE, message=FALSE}
@@ -45,8 +49,8 @@ options("scipen"=100, "digits"=10)
 
 Zanedbání povinné výživy je téma několika stran v České Republice. TOP 09
 dává ústy Markéty Pekarové Adamové najevo, že chce přitáhnout šrouby
-zkrácením doby neplacení výživného, po které se stane neplacní trestným
-činnem [@Kopecky2016]. ČSSD to bere z jiné strany a skrze ministryni práce a
+zkrácením doby neplacení výživného, po které se stane neplacení trestným
+činem [@Kopecky2016]. ČSSD to bere z jiné strany a skrze ministryni práce a
 sociálních věci Michaelu Marksovou prosazuje vyplácení výživného zálohově a
 chce případně nezaplacené výživné na povinných vymáhat zpětně
 [@Kopecky2016b].
@@ -63,19 +67,19 @@ Jako rozvedeného a povinného mě to toto téma také zajímá, i když doufám
 se do situace, kdy se mě tyto věci budou přímo dotýkat, nikdy nedostanu.
 
 Ihned, kdy se o tomto tématu začalo v roce 2016 diskutovat mě napadlo,
-obzvláště v souvsilosti se zkracováním lhůty, po které se z neplacení stane
+obzvláště v souvislosti se zkracováním lhůty, po které se z neplacení stane
 trestný čin, jaký vliv má na počty neplatičů výživného
-nezaměstnanost. Nezdálo se mi, že by zkrácení této lhůty významě přispělo ke
+nezaměstnanost. Nezdálo se mi, že by zkrácení této lhůty významně přispělo ke
 snížení výskytu neplacení výživného.
 
 Rozhodl jsem se porovnat údaje ze statistik Policie ČR o trestných činech a
 údaje týkající se hospodářského výkonu a nezaměstnanosti Česka. Zkoušel jsem
-porovna zjištěné tresné činy zanedbání povinné výživy s HDP podle Českého
-Statistikého Úřadu (ČSÚ), nezaměstnaností podle ČSÚ, nezaměstnaností podle
+porovnat zjištěné trestné činy zanedbání povinné výživy s HDP podle Českého
+Statistického Úřadu (ČSÚ), nezaměstnaností podle ČSÚ, nezaměstnaností podle
 Ministerstva práce a sociálních věcí (MPSV), průměrem počtu evidovaných
 uchazečů o práci (MPSV) a součtu nové hlášených uchazečů o práci (MPSV). Jako
-nejlépe korelující se ukázala být hodnota ročního průměru počtu evidovaných
-uchazečů o práci (MPSV) v daném roce.
+nejlépe korelujíc se ukázala být hodnota ročního průměru počtu evidovaných
+uchazečů o práci (MPSV).
 
 ## Zdroje dat
 
@@ -195,7 +199,7 @@ Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbán�
 
 ## Závěr
 
-Korelace nutně neznamená příčinu-důsledek, ale korlační koeficient `fmtNumM(Corr)` mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných je poměrně vysoký. Tento vztah jistě stojí za hlubší zkoumání. Pravděpodobnost, že nezaměstnanost způsobuje alespoň část výskytů neplacení výživného se mi zdá velmi vysoká.
+Korelace nutně neznamená příčinu-důsledek, ale korelační koeficient \(`r fmtNumM(Corr)`\) mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných je poměrně vysoký. Tento vztah jistě stojí za hlubší zkoumání. Pravděpodobnost, že nezaměstnanost způsobuje alespoň část výskytů neplacení výživného se mi zdá velmi vysoká. Vzhledem k tomu se domnívám, že utažením šroubů à la TOP 09 nemůže dojít k významnému zlepšení placení výživného.
 
 
 # Reference
