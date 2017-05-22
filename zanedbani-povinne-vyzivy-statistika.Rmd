@@ -66,7 +66,7 @@ povinného.
 Jako rozvedeného a povinného mě to toto téma také zajímá, i když doufám, že
 se do situace, kdy se mě tyto věci budou přímo dotýkat, nikdy nedostanu.
 
-Ihned, kdy se o tomto tématu začalo v roce 2016 diskutovat mě napadlo,
+Ihned, kdy se o tomto tématu začalo v roce 2016 diskutovat, mě napadlo,
 obzvláště v souvislosti se zkracováním lhůty, po které se z neplacení stane
 trestný čin, jaký vliv má na počty neplatičů výživného
 nezaměstnanost. Nezdálo se mi, že by zkrácení této lhůty významně přispělo ke
@@ -84,7 +84,7 @@ uchazečů o práci (MPSV).
 Dne 1. ledna 2010 nabyl účinnosti nový trestní zákoník a byl vyhlášen ve
 Sbírce zákonů pod číslem 40/2009 Sb. S ním přišla i změna paragrafu zločinu
 zanedbání povinné výživy z § 213 na § 196. Do § 196, oproti znění § 213,
-přibil konkrétní časový limit čtyř měsíců, po kterých se neplacení výživného
+přibyl konkrétní časový limit čtyř měsíců, po kterých se neplacení výživného
 stává trestným činem. Přibyl také § 196a, který umožňuje zakázat povinnému
 řízení motorového vozidla.
 
@@ -208,7 +208,7 @@ Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbán�
 
 ## Závěr
 
-Korelace nutně neznamená příčinu-důsledek, ale korelační koeficient \(`r fmtNumM(Corr)`\) mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných je poměrně vysoký. Tento vztah jistě stojí za hlubší zkoumání. Pravděpodobnost, že nezaměstnanost způsobuje alespoň část výskytů neplacení výživného se mi zdá velmi vysoká. Vzhledem k tomu se domnívám, že utažením šroubů à la TOP 09 nemůže dojít k významnému zlepšení placení výživného.
+Korelace nutně neznamená příčinu-důsledek, ale korelační koeficient \(`r fmtNumM(Corr)`\) mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných je poměrně vysoký. Tento vztah jistě stojí za hlubší zkoumání. Pravděpodobnost, že nezaměstnanost způsobuje alespoň část výskytů neplacení výživného, se mi zdá velmi vysoká. Vzhledem k tomu se domnívám, že utažením šroubů à la TOP 09 nemůže dojít k významnému zlepšení placení výživného.
 
 
 # Reference
