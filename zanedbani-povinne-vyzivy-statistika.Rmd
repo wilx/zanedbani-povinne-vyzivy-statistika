@@ -3,6 +3,11 @@ title: "Zanedbání povinné výživy"
 author: "Václav Haisman"
 date: "květen 2017"
 output:
+  html_document: default
+  html_notebook:
+    toc: yes
+  md_document:
+    variant: markdown_phpextra
   pdf_document:
     fig_caption: yes
     includes:
@@ -10,11 +15,6 @@ output:
     keep_tex: yes
     latex_engine: lualatex
     toc: yes
-  html_notebook:
-    toc: yes
-  md_document:
-    variant: markdown_phpextra
-  html_document: default
   word_document: default
 geometry: a4paper
 lang: cs-CZ
@@ -124,6 +124,7 @@ printTable <- function(dataFrame) {
 printTable2 <- function(dataFrame) {
     pander(dataFrame, digits = 2, decimal.mark = ",", big.mark = ' ',
            keep.trailing.zeroes = TRUE,
+           keep.line.breaks = TRUE,
            table.split.cells = 15)
 }
 
@@ -148,7 +149,7 @@ fmtNum2 <- function(x, digits) {
 ```
 
 ```{r, echo=FALSE}
-tblColNames <- c("rok", "zjištěno", "stíháno osob", "z toho ženy", "paragraf", "nezaměstnanost v % (MPSV)", "počet evidovaných uchazečů (průměr, MPSV)", "nově hlášených 1.-12. (MPSV)")
+tblColNames <- c("rok", "zjištěno", "stíháno\nosob", "z toho\nženy", "paragraf", "nezaměstnanost\nv % (MPSV)", "počet evidovaných\nuchazečů\n(průměr, MPSV)", "nově hlášených\n1.-12.\n(MPSV)")
 
 DF <- readCsv("zanedbání-povinné-výživy-statistika.csv")
 
