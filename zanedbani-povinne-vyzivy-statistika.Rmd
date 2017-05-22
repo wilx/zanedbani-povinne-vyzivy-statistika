@@ -18,6 +18,7 @@ output:
   word_document: default
 geometry: a4paper
 lang: cs-CZ
+link-citations: yes
 mainfont: Charis SIL
 csl: iso690-author-date-cs.csl
 bibliography: citace.yaml
@@ -87,6 +88,8 @@ zanedbání povinné výživy z § 213 na § 196. Do § 196, oproti znění § 2
 přibyl konkrétní časový limit čtyř měsíců, po kterých se neplacení výživného
 stává trestným činem. Přibyl také § 196a, který umožňuje zakázat povinnému
 řízení motorového vozidla.
+
+Zdrojová data a Rmarkdown dokument generující tento dokument jsou dostupná v GitHub repozitáři <https://github.com/wilx/zanedbani-povinne-vyzivy-statistika>.
 
 ## Zdroje dat
 
