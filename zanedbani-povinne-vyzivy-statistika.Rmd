@@ -3,11 +3,6 @@ title: "Zanedbání povinné výživy"
 author: "Václav Haisman"
 date: "květen 2017"
 output:
-  html_document: default
-  html_notebook:
-    toc: yes
-  md_document:
-    variant: markdown_phpextra
   pdf_document:
     fig_caption: yes
     includes:
@@ -15,6 +10,11 @@ output:
     keep_tex: yes
     latex_engine: lualatex
     toc: yes
+  html_notebook:
+    toc: yes
+  md_document:
+    variant: markdown_phpextra
+  html_document: default
   word_document: default
 geometry: a4paper
 lang: cs-CZ
@@ -153,10 +153,16 @@ fmtNum2 <- function(x, digits) {
 
 ```{r, echo=FALSE}
 tblColNames <- c("rok", "zjištěno", "stíháno\nosob", "z toho\nženy", "paragraf", "nezaměstnanost\nv % (MPSV)", "počet evidovaných\nuchazečů\n(průměr, MPSV)", "nově hlášených\n1.-12.\n(MPSV)")
-
 DF <- readCsv("zanedbání-povinné-výživy-statistika.csv")
 
-printTable2(setNames(DF, tblColNames))
+printPrepDataTable <- function(DF) {
+    DF <- data.frame(DF)
+    DF$rok <- as.factor(DF$rok)
+    DF <- setNames(DF, tblColNames)
+    return(DF)
+}
+
+printTable2(printPrepDataTable(DF))
 ```
 
 ## Normalizovaná data
@@ -169,10 +175,17 @@ nDF <- data.frame(
     zjistenych=data.Normalization(DF$zjistenych, type="n4"),
     pocEvid=data.Normalization(DF$pocEvid, type="n4"))
 
-printTable2(nDF)
+printPrepNormalizedDataTable <- function(DF) {
+    DF <- data.frame(DF)
+    DF$rok <- as.factor(DF$rok)
+    DF <- setNames(DF, c('rok', 'zjištěných\ntrestných\nčinů', 'počet\nevidovaných\nuchazečů'))
+    return(DF)
+}
+
+printTable2(printPrepNormalizedDataTable(nDF))
 ```
 
-```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)."}
+```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR).", dpi=200}
 pdf.options(encoding = 'CP1250')
 
 a <- data.frame(rok = nDF$rok, id = factor(rep("průměrný počet evidovaných\nnezaměstnaných za rok", each = length(nDF$rok))), value = nDF$pocEvid)
@@ -187,7 +200,7 @@ ggplot(nDF2, aes(x=factor(rok), y = value, group=id, color=id)) +
 
 ```
 
-```{r, echo=FALSE, fig.keep="high", fig.cap="Korelace zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)"}
+```{r, echo=FALSE, fig.keep="high", fig.cap="Korelace zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)", dpi=200}
 pdf.options(encoding = 'CP1250')
 
 ggplot(DF,aes(pocEvid, zjistenych)) +
