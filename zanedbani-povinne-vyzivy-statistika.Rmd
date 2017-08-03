@@ -41,6 +41,7 @@ library(clusterSim)
 #library(reshape2)
 #library(Jmisc)
 library(pander)
+library(BayesianFirstAid)
 #library(xtable)
 #options(xtable.floating=FALSE)
 options("scipen"=100, "digits"=10)
@@ -185,6 +186,8 @@ printPrepNormalizedDataTable <- function(DF) {
 printTable2(printPrepNormalizedDataTable(nDF))
 ```
 
+## Výsledky
+
 ```{r, echo=FALSE, fig.keep="high", fig.cap="Graf normalizovaných hodnot zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR).", dpi=200}
 pdf.options(encoding = 'CP1250')
 
@@ -213,6 +216,16 @@ ggplot(DF,aes(pocEvid, zjistenych)) +
     theme(legend.position="top")
 ```
 
+```{r, echo=FALSE, message=FALSE, results='hide', fig.keep="high", fig.cap="Korelace zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR), Bayesův model", dpi=200}
+pdf.options(encoding = 'CP1250')
+
+BCorrTest <- bayes.cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "pearson")
+BCorrTest$x_name <- "zjištěných trestných činů zanedbání povinné výživy"
+BCorrTest$y_name <- "průměrný počet evidovaných\nnezaměstnaných za rok"
+BCorrTestSummary <- summary(BCorrTest)
+invisible(lapply(1,function(x) plot(BCorrTest)))
+```
+
 ```{r, echo=FALSE}
 CorrTest <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "pearson")
 Corr <- CorrTest$estimate
@@ -220,7 +233,8 @@ Corr <- CorrTest$estimate
 CorrTestS <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "spearman")
 CorrS <- CorrTestS$estimate
 ```
-Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je \(r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`\), \({CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)\), \(p=`r fmtNumM(CorrTest$p.value)`\), \(r^2=`r fmtNumM(Corr*Corr)`\).
+
+Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je \(r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`\), \({CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)\), \(p=`r fmtNumM(CorrTest$p.value)`\), \(r^2=`r fmtNumM(Corr*Corr)`\). Odhad korelačního koeficientu Bayesovou metodou \(\widetilde{\rho}=`r fmtNumM(BCorrTestSummary["rho",]["median"])`\), \({HDI}_{`r BCorrTestSummary["rho",]["HDI%"]/100.0`}=(`r fmtNumM(BCorrTestSummary["rho",]["HDIlo"])`; `r fmtNumM(BCorrTestSummary["rho",]["HDIup"])`)\).
 
 ## Závěr
 
