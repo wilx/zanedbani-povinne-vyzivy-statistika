@@ -19,7 +19,7 @@ output:
 geometry: a4paper
 lang: cs-CZ
 link-citations: yes
-mainfont: Charis SIL
+mainfont: TeX Gyre Schola
 csl: iso690-author-date-cs.csl
 bibliography: citace.yaml
 ---
@@ -203,17 +203,20 @@ ggplot(nDF2, aes(x=factor(rok), y = value, group=id, color=id)) +
 
 ```
 
-```{r, echo=FALSE, fig.keep="high", fig.cap="Korelace zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)", dpi=200}
+```{r, echo=FALSE, message=FALSE, fig.keep="high", fig.cap="Korelace zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR)", dpi=200}
 pdf.options(encoding = 'CP1250')
 
 ggplot(DF,aes(pocEvid, zjistenych)) +
-    stat_smooth(formula = y ~ x, method="glm", level=0.99) +
+    stat_smooth(formula = y ~ x, method="glm", level=0.99, fullrange = TRUE) +
     geom_point() +
     geom_text(aes(label=rok), hjust=0.5, vjust=-0.35, angle=0, check_overlap = TRUE) +
-    scale_x_continuous(breaks = seq(round(min(DF$pocEvid), -5), round(max(DF$pocEvid), -5), by = 50000)) +
+    scale_x_continuous(breaks = c(0, seq(round(min(DF$pocEvid) - 49999, -5), round(max(DF$pocEvid), -5), by = 50000)), limits = c(0, NA)) +
     labs(x = "průměrný počet evidovaných nezaměstnaných za rok",
          y = "zjištěných trestných činů zanedbání povinné výživy") +
     theme(legend.position="top")
+
+zjistenychGLM <- glm(DF$zjistenych ~ DF$pocEvid, data = DF)
+zjistenychGLM.CI <- confint(zjistenychGLM, level = 0.99)
 ```
 
 ```{r, echo=FALSE, message=FALSE, results='hide', fig.keep="high", fig.cap="Korelace zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR), Bayesův model", dpi=200}
@@ -234,11 +237,39 @@ CorrTestS <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "sp
 CorrS <- CorrTestS$estimate
 ```
 
-Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)` je \(r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`\), \({CI}_{`r attr(CorrTest$conf.int, "conf.level")`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)\), \(p=`r fmtNumM(CorrTest$p.value)`\), \(r^2=`r fmtNumM(Corr*Corr)`\). Odhad korelačního koeficientu Bayesovou metodou \(\widetilde{\rho}=`r fmtNumM(BCorrTestSummary["rho",]["median"])`\), \({HDI}_{`r BCorrTestSummary["rho",]["HDI%"]/100.0`}=(`r fmtNumM(BCorrTestSummary["rho",]["HDIlo"])`; `r fmtNumM(BCorrTestSummary["rho",]["HDIup"])`)\).
+Pearsonův korelační koeficient mezi zjištěnými trestnými činy zanedbání povinné výživy
+a počty evidovaných nezaměstnaných v letech `r min(DF$rok)` až `r max(DF$rok)`
+je \(r(`r fmtNumM(CorrTest$parameter)`)=`r fmtNumM(Corr)`\),
+\({CI}_{`r fmtNumM(attr(CorrTest$conf.int, "conf.level"))`}=(`r fmtNumM(CorrTest$conf.int[1])`; `r fmtNumM(CorrTest$conf.int[2])`)\),
+\(p=`r fmtNumM(CorrTest$p.value)`\),
+\(r^2=`r fmtNumM(Corr*Corr)`\).
+Odhad korelačního koeficientu Bayesovou metodou
+\(\widetilde{\rho}=`r fmtNumM(BCorrTestSummary["rho",]["median"])`\),
+\({HDI}_{`r fmtNumM(BCorrTestSummary["rho",]["HDI%"]/100.0)`}=(`r fmtNumM(BCorrTestSummary["rho",]["HDIlo"])`; `r fmtNumM(BCorrTestSummary["rho",]["HDIup"])`)\).
+
+Generalizovaný lineární model \(Y = `r fmtNumM(zjistenychGLM$coefficients["DF$pocEvid"])` \cdot X + `r fmtNumM(zjistenychGLM$coefficients["(Intercept)"])`\),
+kde \(Y\) je počet zjištěných trestných činů zanedbání povinné výživy
+a \(X\) je průměrný počet evidovaných nezaměstnaných za rok,
+předpovídá průsečík s osu \(y\) s intervalem spolehlivosti
+\(CI_{0,99}=(`r fmtNumM(zjistenychGLM.CI["(Intercept)",]["0.5 %"])`; `r fmtNumM(zjistenychGLM.CI["(Intercept)",]["99.5 %"])`)\).
+Sklon linárního modelu má interval spolehlivosti
+\(CI_{0,99}=(`r fmtNumM(zjistenychGLM.CI["DF$pocEvid",]["0.5 %"])`; `r fmtNumM(zjistenychGLM.CI["DF$pocEvid",]["99.5 %"])`)\).
+
+
 
 ## Závěr
 
-Korelace nutně neznamená příčinu-důsledek, ale korelační koeficient \(`r fmtNumM(Corr)`\) mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných je poměrně vysoký. Tento vztah jistě stojí za hlubší zkoumání. Pravděpodobnost, že nezaměstnanost způsobuje alespoň část výskytů neplacení výživného, se mi zdá velmi vysoká. Vzhledem k tomu se domnívám, že utažením šroubů à la TOP 09 nemůže dojít k významnému zlepšení placení výživného.
+Korelace nutně neznamená příčinu-důsledek, ale korelační koeficient \(`r fmtNumM(Corr)`\) mezi zjištěnými trestnými činy zanedbání povinné výživy a počty registrovaných nezaměstnaných je poměrně vysoký.
+Z generalizovaného lineárního modelu vyplývá,
+že `r fmtNum(zjistenychGLM.CI["(Intercept)",]["0.5 %"])`
+až `r fmtNum(zjistenychGLM.CI["(Intercept)",]["99.5 %"])`
+neplatičů neplatí z jiných důvodů než kvůli nezaměstnanosti.
+Z téhož modelu také vyplývá,
+že `r fmtNum(round(zjistenychGLM.CI["DF$pocEvid",]["0.5 %"]*100))`
+až `r fmtNum(round(zjistenychGLM.CI["DF$pocEvid",]["99.5 %"]*100))` %
+nezaměstnaných přestane platit výživné.
+
+Tento vztah zanedbání povinné výživy a nezaměstnanosti jistě stojí za hlubší zkoumání. Pravděpodobnost, že nezaměstnanost způsobuje alespoň část výskytů neplacení výživného, se mi zdá velmi vysoká. Vzhledem k tomu se domnívám, že utažením šroubů à la TOP 09 nemůže dojít k významnému zlepšení placení výživného.
 
 
 # Reference

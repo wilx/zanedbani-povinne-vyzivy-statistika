@@ -1,5 +1,11 @@
 \ifluatex
 \usepackage{lualatex-math}
+\usepackage{cstypo}
+\cstypoSingleLetterEnable
+\cstypoALetterEnable
+\cstypoParagraphEnable
+\cstypoPercentsEnable
+\usepackage{uspace}
 \fi
 \usepackage{amssymb}
 \usepackage{newunicodechar}
@@ -8,12 +14,6 @@
 \usepackage{textcomp}
 \usepackage{etoolbox}
 \usepackage{unicode-math}
-\usepackage{cstypo}
-
-\cstypoSingleLetterEnable
-\cstypoALetterEnable
-\cstypoParagraphEnable
-\cstypoPercentsEnable
 
 \AtBeginEnvironment{quote}{\slshape}
 
@@ -22,7 +22,7 @@
 
 %\setmainfont{Charis SIL}
 \setmathfont[Scale=MatchLowercase]{TeX Gyre Schola Math}
-\setmathfont[range={`A-`Z,`a-`z,`0-`9}]{Charis SIL}
+%\setmathfont[range={`A-`Z,`a-`z,`0-`9}]{Charis SIL}
 %\setmainfont{TeX Gyre Pagella}
 %\setmainfont{DejaVu Serif}
 %\setsansfont{DejaVu Sans}
