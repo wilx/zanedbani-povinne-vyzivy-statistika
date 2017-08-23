@@ -150,6 +150,8 @@ fmtNum2 <- function(x, digits) {
     format(x, digits=digits, decimal.mark = ",")
 }
 
+zpv.level <- 0.99
+
 ```
 
 ```{r, echo=FALSE}
@@ -207,7 +209,7 @@ ggplot(nDF2, aes(x=factor(rok), y = value, group=id, color=id)) +
 pdf.options(encoding = 'CP1250')
 
 ggplot(DF,aes(pocEvid, zjistenych)) +
-    stat_smooth(formula = y ~ x, method="glm", level=0.99, fullrange = TRUE) +
+    stat_smooth(formula = y ~ x, method="glm", level=zpv.level, fullrange = TRUE) +
     geom_point() +
     geom_text(aes(label=rok), hjust=0.5, vjust=-0.35, angle=0, check_overlap = TRUE) +
     scale_x_continuous(breaks = c(0, seq(round(min(DF$pocEvid) - 49999, -5), round(max(DF$pocEvid), -5), by = 50000)), limits = c(0, NA)) +
@@ -216,13 +218,13 @@ ggplot(DF,aes(pocEvid, zjistenych)) +
     theme(legend.position="top")
 
 zjistenychGLM <- glm(DF$zjistenych ~ DF$pocEvid, data = DF)
-zjistenychGLM.CI <- confint(zjistenychGLM, level = 0.99)
+zjistenychGLM.CI <- confint(zjistenychGLM, level = zpv.level)
 ```
 
 ```{r, echo=FALSE, message=FALSE, results='hide', fig.keep="high", fig.cap="Korelace zjištěných trestných činů zanedbání povinné výživy a počtu evidovaných nezaměstnaných (MPSV ČR), Bayesův model", dpi=200}
 pdf.options(encoding = 'CP1250')
 
-BCorrTest <- bayes.cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "pearson")
+BCorrTest <- bayes.cor.test(DF$zjistenych, DF$pocEvid, conf.level = zpv.level, method = "pearson")
 BCorrTest$x_name <- "zjištěných trestných činů zanedbání povinné výživy"
 BCorrTest$y_name <- "průměrný počet evidovaných\nnezaměstnaných za rok"
 BCorrTestSummary <- summary(BCorrTest)
@@ -230,10 +232,10 @@ invisible(lapply(1,function(x) plot(BCorrTest)))
 ```
 
 ```{r, echo=FALSE}
-CorrTest <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "pearson")
+CorrTest <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = zpv.level, method = "pearson")
 Corr <- CorrTest$estimate
 
-CorrTestS <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = 0.99, method = "spearman")
+CorrTestS <- cor.test(DF$zjistenych, DF$pocEvid, conf.level = zpv.level, method = "spearman")
 CorrS <- CorrTestS$estimate
 ```
 
@@ -251,10 +253,9 @@ Generalizovaný lineární model \(Y = `r fmtNumM(zjistenychGLM$coefficients["DF
 kde \(Y\) je počet zjištěných trestných činů zanedbání povinné výživy
 a \(X\) je průměrný počet evidovaných nezaměstnaných za rok,
 předpovídá průsečík s osu \(y\) s intervalem spolehlivosti
-\(CI_{0,99}=(`r fmtNumM(zjistenychGLM.CI["(Intercept)",]["0.5 %"])`; `r fmtNumM(zjistenychGLM.CI["(Intercept)",]["99.5 %"])`)\).
+\(CI_{`r fmtNumM(zpv.level)`}=(`r fmtNumM(zjistenychGLM.CI["(Intercept)",]["0.5 %"])`; `r fmtNumM(zjistenychGLM.CI["(Intercept)",]["99.5 %"])`)\).
 Sklon linárního modelu má interval spolehlivosti
-\(CI_{0,99}=(`r fmtNumM(zjistenychGLM.CI["DF$pocEvid",]["0.5 %"])`; `r fmtNumM(zjistenychGLM.CI["DF$pocEvid",]["99.5 %"])`)\).
-
+\(CI_{`r fmtNumM(zpv.level)`}=(`r fmtNumM(zjistenychGLM.CI["DF$pocEvid",]["0.5 %"])`; `r fmtNumM(zjistenychGLM.CI["DF$pocEvid",]["99.5 %"])`)\).
 
 
 ## Závěr
