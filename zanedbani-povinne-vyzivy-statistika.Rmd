@@ -156,7 +156,7 @@ zpv.level <- 0.99
 
 ```{r, echo=FALSE}
 tblColNames <- c("rok", "zjištěno", "stíháno\nosob", "z toho\nženy", "paragraf", "nezaměstnanost\nv % (MPSV)", "počet evidovaných\nuchazečů\n(průměr, MPSV)", "nově hlášených\n1.-12.\n(MPSV)")
-DF <- readCsv("zanedbání-povinné-výživy-statistika.csv")
+DF <- readCsv("zanedbani-povinne-vyzivy-statistika.csv")
 
 printPrepDataTable <- function(DF) {
     DF <- data.frame(DF)
